@@ -1,6 +1,7 @@
+
 # CARGAMOS IMAGEN  DE PHP MODO ALPINE SUPER REDUCIDA
 
-FROM jonatanemanuel/octane:latest
+FROM jonatanemanuel/octane
 
 RUN curl -sS https://getcomposer.org/installer | php -- \
     --install-dir=/usr/local/bin --filename=composer
