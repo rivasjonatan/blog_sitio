@@ -6,7 +6,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- \
     --install-dir=/usr/local/bin --filename=composer
 
 COPY --from=composer:latest /urs/bin/composer urs/bin/composer
-COPY --from=spiralcout/roadrunner:2.4.2 /urs/bin/rr /urs/bin/rr
+COPY --from=spiralscout/roadrunner:2.4.2 /urs/bin/rr /usr/bin/rr
 
 WORKDIR /app
 COPY . . 
