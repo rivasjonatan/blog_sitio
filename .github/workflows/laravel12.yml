@@ -34,4 +34,3 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ secrets.jonatanemanuel }}/laravel:latest
-
