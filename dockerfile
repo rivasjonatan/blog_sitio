@@ -1,26 +1,24 @@
-# CARGAMOS IMAGEN  DE PHP MODO ALPINE SUPER REDUCIDA
-
+# CARGAMOS IMAGEN DE PHP MODO ALPINE SUPER REDUCIDA
 FROM elrincondeisma/octane:latest
 
-RUN curl -sS https://getcomposer.org/installer | php -- \
-    --install-dir=/usr/local/bin --filename=composer
+RUN curl -sS https://getcomposer.org/installer​ | php -- \
+     --install-dir=/usr/local/bin --filename=composer
 
-COPY --from=composer:latest /usr/bin/composer usr/bin/composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY --from=spiralscout/roadrunner:2.4.2 /usr/bin/rr /usr/bin/rr
 
 WORKDIR /app
-COPY . . 
+COPY . .
 RUN rm -rf /app/vendor
 RUN rm -rf /app/composer.lock
-RUN apt-get update && apt-get install -y git zip unzip
 RUN composer install
-RUN composer required laravel/octane spiral/roadrunner
+RUN composer require laravel/octane spiral/roadrunner
 COPY .env.example .env
 RUN mkdir -p /app/storage/logs
 RUN php artisan cache:clear
 RUN php artisan view:clear
 RUN php artisan config:clear
 RUN php artisan octane:install --server="swoole"
-RUN php artisan octane:start --server="swoole" --host="0.0.0.0"
+CMD php artisan octane:start --server="swoole" --host="0.0.0.0"
 
 EXPOSE 8000
