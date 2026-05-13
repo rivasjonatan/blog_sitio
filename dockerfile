@@ -12,6 +12,7 @@ WORKDIR /app
 COPY . . 
 RUN rm -rf /app/vendor
 RUN rm -rf /app/composer.lock
+RUN apt-get update && apt-get install -y git zip unzip
 RUN composer install
 RUN composer required laravel/octane spiral/roadrunner
 COPY .env.example .env
