@@ -14,7 +14,7 @@ RUN rm -rf /app/vendor
 #RUN rm -rf /app/composer.lock
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer install --no-scripts --no-autoloader
+#RUN composer install --no-scripts --no-autoloader
 
 RUN apt-get update && apt-get install -y unzip git libzip-dev
 
