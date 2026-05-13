@@ -11,7 +11,12 @@ WORKDIR /app
 COPY . .
 RUN rm -rf /app/vendor
 RUN rm -rf /app/composer.lock
-RUN RUN apt-get update && apt-get install net-tools
+
+RUN apt-get update 
+RUN apt-get install -y net-tools iputils-ping
+RUN apt-get install -y curl wget
+
+#RUN RUN apt-get update && apt-get install net-tools
 RUN composer install
 RUN composer require laravel/octane spiral/roadrunner
 COPY .env.example .env
