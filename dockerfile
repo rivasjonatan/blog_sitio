@@ -1,53 +1,51 @@
-# IMAGEN BASE
 FROM elrincondeisma/octane:latest
 
-# INSTALAR DEPENDENCIAS EN ALPINE
+# Instalar dependencias Alpine
 RUN apk update && apk add --no-cache \
     unzip \
     git \
-    libzip-dev \
+    curl \
     zip \
-    curl
+    libzip-dev
 
-# INSTALAR COMPOSER
+# Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# INSTALAR ROADRUNNER
+# RoadRunner
 COPY --from=spiralscout/roadrunner:2.4.2 /usr/bin/rr /usr/bin/rr
 
-# DIRECTORIO DE TRABAJO
 WORKDIR /app
 
-# COPIAR PROYECTO
-COPY . .
+# Copiamos composer primero para cache de Docker
+COPY composer.json composer.lock ./
 
-# LIMPIAR VENDOR
-RUN rm -rf vendor
-
-# VARIABLES
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV COMPOSER_MEMORY_LIMIT=-1
 
-# INSTALAR DEPENDENCIAS PHP
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+# Instalar dependencias
+RUN composer install \
+    --no-dev \
+    --prefer-dist \
+    --optimize-autoloader \
+    --no-interaction
 
-# INSTALAR OCTANE Y ROADRUNNER
-RUN composer require laravel/octane spiral/roadrunner
+# Copiamos el resto del proyecto
+COPY . .
 
-# CONFIGURAR ENV
+# Variables
 RUN cp .env.example .env
 
-# PERMISOS
+# Permisos Laravel
 RUN mkdir -p storage/logs bootstrap/cache && \
     chmod -R 777 storage bootstrap/cache
 
-# LIMPIAR CACHE
-RUN php artisan cache:clear || true
-RUN php artisan config:clear || true
-RUN php artisan view:clear || true
+# Generar APP_KEY
+RUN php artisan key:generate
 
-# INSTALAR OCTANE
+# Limpiar caches
+RUN php artisan optimize:clear || true
+
+# Instalar Octane
 RUN php artisan octane:install --server=roadrunner || true
 
-# EXPONER PUERTO
 EXPOSE 8000
