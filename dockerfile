@@ -14,7 +14,9 @@ RUN rm -rf /app/composer.lock
 RUN apk update && apk add curl && \
   curl -sS https://getcomposer.org/installer | php \
   && chmod +x composer.phar && mv composer.phar /usr/local/bin/composer
-RUN composer install
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
+RUN composer dump-autoload --optimize
+
 RUN composer require laravel/octane spiral/roadrunner
 COPY .env.example .env
 RUN mkdir -p /app/storage/logs
