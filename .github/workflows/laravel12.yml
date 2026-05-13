@@ -38,8 +38,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-            context: .
-            push: true
-            tags: user/app:latest
-            # Indica a Buildx que 'octane' es una imagen local o de un paso previo
-            build-contexts: octane=docker-image://octane:latest
+            context: ./octane-dir
+            load: true  # Esto la hace visible para 'docker images'
+            tags: octane:latest
