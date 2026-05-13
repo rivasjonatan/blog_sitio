@@ -13,7 +13,13 @@ RUN rm -rf /app/vendor
 
 #RUN rm -rf /app/composer.lock
 
-RUN composer install 
+ENV COMPOSER_ALLOW_SUPERUSER=1
+RUN composer install --no-scripts --no-autoloader
+
+RUN apt-get update && apt-get install -y unzip git libzip-dev
+
+RUN COMPOSER_MEMORY_LIMIT=-1 composer install --no-scripts --no-autoload
+
 RUN composer dump-autoload --optimize
 
 RUN composer require laravel/octane spiral/roadrunner
