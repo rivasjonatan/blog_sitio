@@ -11,10 +11,7 @@ WORKDIR /app
 COPY . .
 RUN rm -rf /app/vendor
 RUN rm -rf /app/composer.lock
-RUN apk update && apk add curl && \
-  curl -sS https://getcomposer.org/installer | php \
-  && chmod +x composer.phar && mv composer.phar /usr/local/bin/composer
-
+ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-scripts --no-autoloader
 RUN composer dump-autoload --optimize
 
