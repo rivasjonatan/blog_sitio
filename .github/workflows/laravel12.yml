@@ -1,4 +1,4 @@
-name: LARAVEL 12
+name: Docker Image CI
 
 on:
   push:
@@ -34,10 +34,3 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/laravel:latest
-          
-      - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-            context: ./octane-dir
-            load: true  # Esto la hace visible para 'docker images'
-            tags: octane:latest
