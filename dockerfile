@@ -1,12 +1,25 @@
 FROM elrincondeisma/octane:latest
 
-# Instalar dependencias Alpine
+# Dependencias Alpine
 RUN apk update && apk add --no-cache \
-    unzip \
     git \
+    unzip \
     curl \
     zip \
-    libzip-dev
+    libzip-dev \
+    oniguruma-dev \
+    icu-dev \
+    autoconf \
+    g++ \
+    make
+
+# Instalar extensiones PHP necesarias
+RUN docker-php-ext-install \
+    pdo \
+    pdo_mysql \
+    mbstring \
+    zip \
+    intl
 
 # Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -16,33 +29,37 @@ COPY --from=spiralscout/roadrunner:2.4.2 /usr/bin/rr /usr/bin/rr
 
 WORKDIR /app
 
-# Copiamos composer primero para cache de Docker
+# Copiar composer primero
 COPY composer.json composer.lock ./
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV COMPOSER_MEMORY_LIMIT=-1
 
-# Instalar dependencias
+# Limpiar cache composer
+RUN composer clear-cache
+
+# Instalar dependencias SIN scripts
 RUN composer install \
     --no-dev \
+    --no-scripts \
     --prefer-dist \
     --optimize-autoloader \
-    --no-interaction
+    --no-interaction \
+    --ignore-platform-reqs
 
-# Copiamos el resto del proyecto
+# Copiar proyecto
 COPY . .
 
-# Variables
+# ENV
 RUN cp .env.example .env
 
-# Permisos Laravel
-RUN mkdir -p storage/logs bootstrap/cache && \
-    chmod -R 777 storage bootstrap/cache
+# APP KEY
+RUN php artisan key:generate || true
 
-# Generar APP_KEY
-RUN php artisan key:generate
+# Permisos
+RUN chmod -R 777 storage bootstrap/cache || true
 
-# Limpiar caches
+# Cache Laravel
 RUN php artisan optimize:clear || true
 
 # Instalar Octane
